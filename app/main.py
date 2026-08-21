@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router
 from app.config import get_settings, validate_gateway_models
+from app.storage import bm25_index
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("law_firm_rag")
@@ -16,7 +17,7 @@ logger = logging.getLogger("law_firm_rag")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Validate Gateway model IDs at startup; fail fast if any are missing."""
+    """Validate Gateway models and load persisted BM25 index on startup."""
     settings = get_settings()
     try:
         result = validate_gateway_models(settings)
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as e:
         raise RuntimeError(f"Startup failed: {e}") from e
 
+    bm25_index.load_index()  # no-op if index not yet built (pre-first ingest)
     logger.info("Ready.")
     yield
     logger.info("Shutting down.")
@@ -46,6 +48,19 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Mount static files and serve web UI at / and /ui
+    import os
+    from fastapi.staticfiles import StaticFiles
+    from fastapi.responses import FileResponse
+
+    if os.path.exists("static"):
+        app.mount("/static", StaticFiles(directory="static"), name="static")
+
+        @app.get("/", include_in_schema=False)
+        @app.get("/ui", include_in_schema=False)
+        async def serve_ui() -> FileResponse:
+            return FileResponse("static/index.html")
 
     app.include_router(router)
     return app

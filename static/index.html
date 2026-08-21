@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LexRAG — Legal Contract Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Markdown parser for rich legal answer formatting -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: rgba(15, 23, 42, 0.75);
+      --bg-card: rgba(17, 26, 46, 0.7);
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --border-glow: rgba(99, 102, 241, 0.3);
+      --primary: #6366f1;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+      --primary-hover: #4f46e5;
+      --accent-gold: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --font-heading: 'Outfit', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 30%, rgba(16, 185, 129, 0.06) 0px, transparent 60%);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    header {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.9rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
+    .brand-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: #fff;
+    }
+
+    .brand-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-left: 0.4rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #34d399;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 10px var(--accent-emerald);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      padding: 0.45rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* Main Content Container */
+    .main-wrapper {
+      max-width: 1040px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    /* Glass Cards */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+    }
+
+    /* Search Area */
+    .textarea-container {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    textarea {
+      width: 100%;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      color: #fff;
+      padding: 1.15rem 1.25rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      line-height: 1.6;
+      resize: vertical;
+      min-height: 110px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      background: rgba(13, 19, 33, 0.95);
+    }
+
+    textarea::placeholder {
+      color: #475569;
+    }
+
+    .query-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.825rem;
+      color: var(--text-secondary);
+    }
+
+    .slider-group input[type="range"] {
+      width: 130px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #4f46e5);
+      border: none;
+      color: #fff;
+      padding: 0.85rem 1.85rem;
+      border-radius: 12px;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      box-shadow: 0 4px 18px var(--primary-glow);
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Response View Area */
+    .response-wrapper {
+      display: none;
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .metrics-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: center;
+    }
+
+    .metric-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.775rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .metric-badge.emerald {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+
+    .metric-badge.amber {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #fbbf24;
+    }
+
+    .metric-badge.rose {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: rgba(244, 63, 94, 0.35);
+      color: #fda4af;
+    }
+
+    /* Formatted Legal Answer Typography */
+    .legal-answer-content {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #f1f5f9;
+      margin-bottom: 2rem;
+    }
+
+    .legal-answer-content p {
+      margin-bottom: 1.15rem;
+    }
+
+    .legal-answer-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .legal-answer-content strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .legal-answer-content ul, .legal-answer-content ol {
+      margin-left: 1.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .legal-answer-content li {
+      margin-bottom: 0.5rem;
+      padding-left: 0.25rem;
+    }
+
+    .legal-answer-content h3, .legal-answer-content h4 {
+      font-family: var(--font-heading);
+      color: #e0e7ff;
+      margin-top: 1.35rem;
+      margin-bottom: 0.65rem;
+      font-weight: 700;
+    }
+
+    /* Inline Citation Pill tags */
+    .citation-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(99, 102, 241, 0.2);
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      color: #c7d2fe;
+      padding: 0.1rem 0.45rem;
+      border-radius: 5px;
+      margin: 0 0.15rem;
+      vertical-align: middle;
+    }
+
+    /* Citations Section */
+    .citations-header {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .citations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 1rem;
+    }
+
+    .citation-card {
+      background: rgba(9, 13, 22, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      transition: all 0.2s ease;
+    }
+
+    .citation-card:hover {
+      background: rgba(18, 26, 44, 0.85);
+      border-color: rgba(255, 255, 255, 0.15);
+      border-left-color: #818cf8;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .citation-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .citation-doc {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #e0e7ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 240px;
+    }
+
+    .citation-meta-pill {
+      font-family: var(--font-mono);
+      font-size: 0.725rem;
+      background: rgba(99, 102, 241, 0.18);
+      color: #a5b4fc;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .citation-excerpt {
+      font-family: var(--font-mono);
+      font-size: 0.775rem;
+      color: #94a3b8;
+      line-height: 1.55;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 0.75rem;
+      border-radius: 8px;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1e293b;
+      border: 1px solid var(--border-subtle);
+      color: #fff;
+      padding: 0.85rem 1.35rem;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 200;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <a href="#" class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L1 21h22L12 2zm0 3.84L19.46 19H4.54L12 5.84zM11 10h2v4h-2zm0 6h2v2h-2z"/>
+        </svg>
+      </div>
+      <div>
+        <span class="brand-title">LexRAG</span>
+        <span class="brand-badge">Legal Intelligence</span>
+      </div>
+    </a>
+
+    <div class="header-actions">
+      <div class="status-pill" id="healthPill">
+        <div class="status-dot"></div>
+        <span id="healthText">ChromaDB Connected</span>
+      </div>
+
+      <button class="btn-secondary" id="ingestBtn" onclick="triggerIngestion()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+        </svg>
+        Re-Index Documents
+      </button>
+
+      <a href="/docs" target="_blank" class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        API Reference
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- Search / Input Card -->
+    <section class="glass-card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Contract Question & Analysis</span>
+        </div>
+        <div class="card-subtitle">Claude Sonnet 4.6 • Cohere Rerank v3.5</div>
+      </div>
+
+      <div class="textarea-container">
+        <textarea id="queryInput" placeholder="Enter your legal question (e.g. What are the indemnification obligations in the Manufacturing Agreement?)..."></textarea>
+      </div>
+
+      <div class="query-controls">
+        <div class="slider-group">
+          <span>Top Chunks (k):</span>
+          <input type="range" id="topKSlider" min="1" max="10" value="5" oninput="document.getElementById('topKVal').innerText = this.value">
+          <strong id="topKVal" style="color: var(--primary); font-family: var(--font-mono);">5</strong>
+        </div>
+
+        <button class="btn-primary" id="submitBtn" onclick="submitQuery()">
+          <span id="btnIcon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </span>
+          <span id="btnText">Analyze Contract</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Response / Result Card -->
+    <section class="glass-card response-wrapper" id="responseWrapper">
+      <div class="metrics-bar">
+        <div class="metric-badge emerald" id="faithfulnessBadge">
+          <span>Faithfulness:</span>
+          <strong id="faithfulnessVal">--</strong>
+        </div>
+        <div class="metric-badge" id="confidenceBadge">
+          <span>Confidence:</span>
+          <strong id="confidenceVal">HIGH</strong>
+        </div>
+        <div class="metric-badge" id="latencyBadge">
+          <span>Latency:</span>
+          <strong id="latencyVal">-- ms</strong>
+        </div>
+        <div class="metric-badge rose" id="abstentionBadge" style="display: none;">
+          <span>Guardrail:</span>
+          <strong id="abstentionVal">Abstained</strong>
+        </div>
+      </div>
+
+      <!-- Formatted Rich Legal Markdown Content -->
+      <div class="legal-answer-content" id="answerContent"></div>
+
+      <!-- Citations Section -->
+      <div id="citationsContainer" style="display: none;">
+        <div class="citations-header">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <span>Verified Contract Citations</span>
+          <span id="citationsCount" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 400;"></span>
+        </div>
+        <div class="citations-grid" id="citationsGrid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <span id="toastMsg">Operation successful</span>
+  </div>
+
+  <script>
+    // Keyboard shortcut (Ctrl + Enter)
+    document.getElementById('queryInput').addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        submitQuery();
+      }
+    });
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 4000);
+    }
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/health');
+        const data = await res.json();
+        if (data.status === 'ok') {
+          document.getElementById('healthText').innerText = `ChromaDB OK • ${data.models.llm.split('/')[1]}`;
+        }
+      } catch (err) {
+        document.getElementById('healthText').innerText = 'Connecting...';
+      }
+    }
+    checkHealth();
+
+    async function triggerIngestion() {
+      const btn = document.getElementById('ingestBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Indexing...`;
+      try {
+        const res = await fetch('/ingest', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({directory: 'data/contracts'})
+        });
+        const data = await res.json();
+        showToast(`Successfully indexed ${data.documents_processed} contracts (${data.chunks_created} chunks)!`);
+      } catch (err) {
+        showToast(`Indexing failed: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Re-Index Documents
+        `;
+      }
+    }
+
+    function formatLegalAnswer(rawText) {
+      if (!rawText) return '';
+      
+      // Parse markdown bold, lists, paragraphs
+      let parsed = marked.parse(rawText);
+
+      // Enhance in-text citations like [Section 4.5] or [p.7] or [Page 2] with glowing citation pills
+      parsed = parsed.replace(/\[(Section [^\]]+|p\.\s*\d+|Page \d+[^\]]*)\]/g, '<span class="citation-tag">[$1]</span>');
+
+      return parsed;
+    }
+
+    async function submitQuery() {
+      const query = document.getElementById('queryInput').value.trim();
+      if (!query) return;
+
+      const top_k = parseInt(document.getElementById('topKSlider').value, 10);
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+      const responseWrapper = document.getElementById('responseWrapper');
+
+      submitBtn.disabled = true;
+      btnText.innerText = 'Analyzing...';
+      btnIcon.innerHTML = `<span class="spinner"></span>`;
+
+      try {
+        const res = await fetch('/query', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ question: query, top_k: top_k })
+        });
+
+        const data = await res.json();
+
+        // Render Markdown Formatted Answer
+        document.getElementById('answerContent').innerHTML = formatLegalAnswer(data.answer);
+
+        // Render Metrics
+        const faithfulnessBadge = document.getElementById('faithfulnessBadge');
+        const faithfulnessVal = document.getElementById('faithfulnessVal');
+        if (data.faithfulness_score !== null && data.faithfulness_score !== undefined) {
+          const scorePercent = Math.round(data.faithfulness_score * 100);
+          faithfulnessVal.innerText = `${scorePercent}% Grounded`;
+          faithfulnessBadge.className = `metric-badge ${scorePercent >= 80 ? 'emerald' : 'amber'}`;
+          faithfulnessBadge.style.display = 'inline-flex';
+        } else {
+          faithfulnessBadge.style.display = 'none';
+        }
+
+        document.getElementById('confidenceVal').innerText = (data.confidence || 'high').toUpperCase();
+        document.getElementById('latencyVal').innerText = `${Math.round(data.processing_time_ms || 0)} ms`;
+
+        // Abstention Guard
+        const abstentionBadge = document.getElementById('abstentionBadge');
+        if (data.abstention_triggered_by) {
+          abstentionBadge.style.display = 'inline-flex';
+          document.getElementById('abstentionVal').innerText = `Abstained (${data.abstention_triggered_by})`;
+        } else {
+          abstentionBadge.style.display = 'none';
+        }
+
+        // Render Citations Cards
+        const citationsContainer = document.getElementById('citationsContainer');
+        const citationsGrid = document.getElementById('citationsGrid');
+        citationsGrid.innerHTML = '';
+
+        if (data.citations && data.citations.length > 0) {
+          citationsContainer.style.display = 'block';
+          document.getElementById('citationsCount').innerText = `(${data.citations.length} sources)`;
+          data.citations.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'citation-card';
+            card.innerHTML = `
+              <div class="citation-top">
+                <span class="citation-doc" title="${c.source_file}">${c.source_file}</span>
+                <span class="citation-meta-pill">p.${c.page} • ${c.section || 'Clause'}</span>
+              </div>
+              <div class="citation-excerpt">"${c.text_excerpt}"</div>
+            `;
+            citationsGrid.appendChild(card);
+          });
+        } else {
+          citationsContainer.style.display = 'none';
+        }
+
+        responseWrapper.style.display = 'block';
+        responseWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      } catch (err) {
+        showToast(`Query failed: ${err.message}`);
+      } finally {
+        submitBtn.disabled = false;
+        btnText.innerText = 'Analyze Contract';
+        btnIcon.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     AI_GATEWAY_BASE_URL: str = "https://ai-gateway.vercel.sh/v1"
 
     # Models
-    LLM_MODEL: str = "anthropic/claude-sonnet-4.6"
-    EMBEDDING_MODEL: str = "openai/text-embedding-3-large"
+    LLM_MODEL: str = "openai/gpt-4o-mini"
+    EMBEDDING_MODEL: str = "openai/text-embedding-3-small"
     RERANK_MODEL: str = "cohere/rerank-v3.5"
 
     # ChromaDB

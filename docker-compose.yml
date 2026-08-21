@@ -1,0 +1,46 @@
+services:
+  # Dedicated ChromaDB container (Vector Database)
+  chromadb-server:
+    image: chromadb/chroma:latest
+    container_name: law_firm_chromadb
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # FastAPI Application container
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: law_firm_rag_api
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./data/contracts:/app/data/contracts:ro
+      - ./data/bm25_index.pkl:/app/data/bm25_index.pkl
+    env_file:
+      - .env
+    environment:
+      - CHROMA_HOST=chromadb-server
+    depends_on:
+      - chromadb-server
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+volumes:
+  chroma_data:
+    name: law_firm_chroma_data
+
+networks:
+  rag-network:
+    name: law_firm_rag_network
+    driver: bridge

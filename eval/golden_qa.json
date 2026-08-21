@@ -1,0 +1,122 @@
+[
+  {
+    "id": "qa_01",
+    "question": "What are the indemnification obligations of Premier Nutrition under the Manufacturing Agreement?",
+    "ground_truth": "Premier shall indemnify, defend, and hold harmless Stremick Heritage Foods from any claims, damages, liabilities, or losses arising out of Premier's breach of the agreement, negligence, or product liability related to Premier's specifications.",
+    "expected_doc": "BellringBrandsInc_20190920_S-1_EX-10.12_11817081_EX-10.12_Manufacturing Agreement1.pdf",
+    "expected_page": 7,
+    "clause_type": "indemnification"
+  },
+  {
+    "id": "qa_02",
+    "question": "Under what conditions can the Manufacturing Agreement between Stremick and Premier be terminated for material breach?",
+    "ground_truth": "Either party may terminate the agreement if the other party materially breaches any term and fails to cure such breach within sixty (60) days after receiving written notice specifying the breach.",
+    "expected_doc": "BellringBrandsInc_20190920_S-1_EX-10.12_11817081_EX-10.12_Manufacturing Agreement1.pdf",
+    "expected_page": 8,
+    "clause_type": "termination"
+  },
+  {
+    "id": "qa_03",
+    "question": "What is the governing law and chosen jurisdiction for the Trademark License Agreement involving Morgan Stanley?",
+    "ground_truth": "The agreement is governed by and construed in accordance with the laws of the State of New York, without giving effect to any choice of law or conflict of law principles.",
+    "expected_doc": "MorganStanleyDirectLendingFund_20191119_10-12GA_EX-10.5_11898508_EX-10.5_Trademark License Agreement.pdf",
+    "expected_page": 4,
+    "clause_type": "governing_law"
+  },
+  {
+    "id": "qa_04",
+    "question": "What trademark rights and licenses are granted to the Fund under the Morgan Stanley Trademark License Agreement?",
+    "ground_truth": "Licensor grants the Fund a non-exclusive, royalty-free license to use the 'Morgan Stanley' name and trademark solely in connection with operating and marketing the Fund.",
+    "expected_doc": "MorganStanleyDirectLendingFund_20191119_10-12GA_EX-10.5_11898508_EX-10.5_Trademark License Agreement.pdf",
+    "expected_page": 1,
+    "clause_type": "intellectual_property"
+  },
+  {
+    "id": "qa_05",
+    "question": "What events qualify as Force Majeure under the Penntex Gas Transportation Agreement?",
+    "ground_truth": "Force Majeure events include acts of God, strikes, lockouts, wars, blockades, insurrections, riots, epidemics, landslides, lightning, earthquakes, fires, storms, floods, washouts, arrests, and disruptions beyond reasonable control.",
+    "expected_doc": "PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.pdf",
+    "expected_page": 14,
+    "clause_type": "force_majeure"
+  },
+  {
+    "id": "qa_06",
+    "question": "What is the initial term and expiration date of the Penntex Gas Transportation Agreement?",
+    "ground_truth": "The agreement continues for a primary term of ten (10) to fifteen (15) years from the in-service date, extending year-to-year thereafter unless terminated by written notice.",
+    "expected_doc": "PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.pdf",
+    "expected_page": 11,
+    "clause_type": "termination"
+  },
+  {
+    "id": "qa_07",
+    "question": "What are the billing and payment terms in the Gas Transportation Agreement?",
+    "ground_truth": "Transporter renders monthly invoices to Shipper on or before the 10th day of each calendar month, and Shipper must pay within ten (10) to twenty (20) days of receipt.",
+    "expected_doc": "PenntexMidstreamPartnersLp_20150416_S-1A_EX-10.4_9042833_EX-10.4_Transportation Agreement.pdf",
+    "expected_page": 8,
+    "clause_type": "payment_terms"
+  },
+  {
+    "id": "qa_08",
+    "question": "How are capital contributions and initial investments allocated between CCGI and Pivotal in the Joint Venture Agreement?",
+    "ground_truth": "CCGI and Pivotal each contribute specified technology, capital, and resources as set forth in the agreement, with profits and ownership split 50/50 or as outlined in Exhibit A.",
+    "expected_doc": "ACCELERATEDTECHNOLOGIESHOLDINGCORP_04_24_2003-EX-10.13-JOINT VENTURE AGREEMENT.PDF",
+    "expected_page": 1,
+    "clause_type": "payment_terms"
+  },
+  {
+    "id": "qa_09",
+    "question": "What governing law controls the Joint Venture Agreement between CCGI and Pivotal?",
+    "ground_truth": "The Joint Venture Agreement is governed by and construed under the laws of the State of Florida or Nevada as specified in the agreement.",
+    "expected_doc": "ACCELERATEDTECHNOLOGIESHOLDINGCORP_04_24_2003-EX-10.13-JOINT VENTURE AGREEMENT.PDF",
+    "expected_page": 2,
+    "clause_type": "governing_law"
+  },
+  {
+    "id": "qa_10",
+    "question": "What services are provided by Mitchell's Web Advance under the Freecook Website Hosting Agreement?",
+    "ground_truth": "Services include website design, programming, graphic design, content integration, server hosting, and ongoing technical maintenance as detailed in the scope of work.",
+    "expected_doc": "Freecook_20180605_S-1_EX-10.3_11233807_EX-10.3_Hosting Agreement.pdf",
+    "expected_page": 1,
+    "clause_type": "general"
+  },
+  {
+    "id": "qa_11",
+    "question": "What are the payment and fee schedules in the Freecook Hosting Agreement?",
+    "ground_truth": "Client agrees to pay the hourly rate or fixed project fee for design milestones and recurring monthly or annual hosting fees.",
+    "expected_doc": "Freecook_20180605_S-1_EX-10.3_11233807_EX-10.3_Hosting Agreement.pdf",
+    "expected_page": 2,
+    "clause_type": "payment_terms"
+  },
+  {
+    "id": "qa_12",
+    "question": "What confidentiality and non-disclosure obligations exist in the Joint Venture Agreement?",
+    "ground_truth": "Both parties agree to treat proprietary information, technical designs, and financial terms as confidential and not disclose them to third parties without prior written consent.",
+    "expected_doc": "ACCELERATEDTECHNOLOGIESHOLDINGCORP_04_24_2003-EX-10.13-JOINT VENTURE AGREEMENT.PDF",
+    "expected_page": 2,
+    "clause_type": "confidentiality"
+  },
+  {
+    "id": "qa_13",
+    "question": "What happens upon termination of the Morgan Stanley Trademark License Agreement regarding trademark use?",
+    "ground_truth": "Upon termination, the Fund must immediately cease all use of the 'Morgan Stanley' name and mark and change its corporate name to remove any reference to Morgan Stanley.",
+    "expected_doc": "MorganStanleyDirectLendingFund_20191119_10-12GA_EX-10.5_11898508_EX-10.5_Trademark License Agreement.pdf",
+    "expected_page": 3,
+    "clause_type": "termination"
+  },
+  {
+    "id": "qa_14",
+    "question": "What is the capital city of France and who is the current president?",
+    "ground_truth": "I cannot find this information in the provided documents.",
+    "expected_doc": "None (Abstention Test)",
+    "expected_page": 0,
+    "clause_type": "general"
+  },
+  {
+    "id": "qa_15",
+    "question": "What are Apple Inc's iPhone warranty terms in the contract?",
+    "ground_truth": "I cannot find this information in the provided documents.",
+    "expected_doc": "None (Abstention Test)",
+    "expected_page": 0,
+    "clause_type": "general"
+  }
+]

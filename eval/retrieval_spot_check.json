@@ -1,0 +1,44 @@
+[
+  {
+    "id": "q1",
+    "question": "What is the governing law and jurisdiction for the Trademark License Agreement?",
+    "expected_doc": "Trademark License Agreement",
+    "expected_clause_type": "governing_law",
+    "expected_keywords": ["Governing Law", "New York", "Delaware", "jurisdiction"]
+  },
+  {
+    "id": "q2",
+    "question": "What are the termination conditions and notice period in the Manufacturing Agreement?",
+    "expected_doc": "Manufacturing Agreement",
+    "expected_clause_type": "termination",
+    "expected_keywords": ["Termination", "notice", "days", "breach", "Agreement"]
+  },
+  {
+    "id": "q3",
+    "question": "What are the indemnification obligations in the Manufacturing Agreement?",
+    "expected_doc": "Manufacturing Agreement",
+    "expected_clause_type": "indemnification",
+    "expected_keywords": ["Indemnification", "indemnify", "defend", "harmless"]
+  },
+  {
+    "id": "q4",
+    "question": "How are profits and losses distributed in the Joint Venture Agreement?",
+    "expected_doc": "JOINT VENTURE AGREEMENT",
+    "expected_clause_type": "payment_terms",
+    "expected_keywords": ["Joint Venture", "profits", "percentage", "distribution", "capital"]
+  },
+  {
+    "id": "q5",
+    "question": "What events constitute Force Majeure in the Gas Transportation Agreement?",
+    "expected_doc": "Transportation Agreement",
+    "expected_clause_type": "force_majeure",
+    "expected_keywords": ["Force Majeure", "act of God", "strike", "flood", "event"]
+  },
+  {
+    "id": "q6",
+    "question": "What intellectual property rights and licenses are granted under the Trademark Agreement?",
+    "expected_doc": "Trademark License Agreement",
+    "expected_clause_type": "intellectual_property",
+    "expected_keywords": ["Trademark", "license", "grant", "proprietary", "ownership"]
+  }
+]
