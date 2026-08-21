@@ -71,7 +71,7 @@ Reply with ONLY 'YES' or 'NO'."""
                 model=self.settings.LLM_MODEL,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.0,
-                max_tokens=10,
+                max_tokens=30,
             )
             decision = resp.choices[0].message.content.strip().upper()
             is_relevant = "YES" in decision
@@ -113,24 +113,25 @@ Reply with ONLY 'YES' or 'NO'."""
 
         context_text = self._build_context_block(chunks)
 
-        system_prompt = f"""You are a professional legal research assistant for a law firm.
+        system_prompt = f"""You are a senior legal associate for a law firm.
 Your task is to answer legal inquiries based EXCLUSIVELY on the provided contract excerpts.
 
 RULES:
-1. Grounding: Answer ONLY using information explicitly stated in the context. Do NOT extrapolate or use outside legal knowledge.
-2. Abstention: If the context is insufficient to answer the query, set answer to exactly "{_ABSTENTION_PHRASE}".
-3. Citations: Every substantive statement must cite the specific source document and page.
-4. Tone: Maintain an objective, professional legal tone.
-5. Format: Respond with valid JSON matching this exact structure:
+1. Grounding: Answer ONLY using facts explicitly stated in the context. Do NOT extrapolate or guess.
+2. Redacted Information: In SEC contract filings, confidential commercial numbers are often redacted (marked as [*], [***], or [ ]). If a quantity or price is redacted, explicitly explain that the specific numerical figure is confidential/redacted in the agreement rather than leaving empty brackets.
+3. In-Text Citations: Cite sources cleanly in natural brackets, e.g., [BellringBrandsInc, p.2, Section 3.1] or [Page 2, Section 4]. Do NOT copy raw prompt metadata tokens like "[Source 1 | ...]".
+4. Abstention: If the context is completely insufficient or unrelated, set answer to exactly "{_ABSTENTION_PHRASE}".
+5. Tone: Objective, precise, professional legal analysis.
+6. Format: Respond with valid JSON matching this exact structure:
 {{
-  "answer": "<concise, professional legal answer citing clauses in brackets>",
+  "answer": "<professional legal answer citing sources in clean brackets>",
   "citations": [
     {{
       "source_file": "<exact filename from source>",
       "page": <page_number_int>,
       "section": "<section_heading>",
       "clause_type": "<clause_type>",
-      "text_excerpt": "<concise 1-2 sentence verbatim quote>"
+      "text_excerpt": "<concise 1-2 sentence verbatim quote from context>"
     }}
   ],
   "confidence": "high" | "medium" | "low"
